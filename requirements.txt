@@ -8,3 +8,4 @@ uvicorn
 matplotlib
 fastapi
 uvicorn
+python-multipart

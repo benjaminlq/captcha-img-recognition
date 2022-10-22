@@ -72,16 +72,16 @@ class CaptchaDataset(Dataset):
         sample_idx = np.random.randint(0, len(self.sequences))
         return ## Do something here
     
-    def save_dataset(self, path):
+    def save_dict(self, path):
         f = open(path, "wb")
-        pickle.dump(self, f)
+        pickle.dump(self.id2char, f)
         f.close()
         
-    def load_dataset(self, path):
+    def load_dict(self, path):
         f = open(path, "rb")
-        dataset = pickle.load(f)
+        decode_dict = pickle.load(f)
         f.close()
-        return dataset
+        return decode_dict
         
 class CaptchaDataloader:
     def __init__(
@@ -101,7 +101,7 @@ class CaptchaDataloader:
         else:
             self.full_dataset = CaptchaDataset(data_dir, resize = resize)
         self.full_dataset.setup()
-        self.full_dataset.save_dataset(str(DICTIONARY_PATH/"decode_dict.pkl"))
+        self.full_dataset.save_dict(str(DICTIONARY_PATH/"decode_dict.pkl"))
         
         if val_split > 0:
             full_size = len(self.full_dataset)

@@ -1,11 +1,10 @@
 import config
 from dev import utils
-from PIL import Image
 from fastapi import APIRouter, File, UploadFile
-from inference import Predictor
+from deploy.inference import Predictor
 
 model_path = str(config.MODEL_PATH/"model.pt")
-decoder_path = str(config.DICTIONARY_PATH/"decoder_dict.pkl")
+decoder_path = str(config.DICTIONARY_PATH/"decode_dict.pkl")
 
 predictor = Predictor(model_path = model_path, decoder_path = decoder_path)
 
@@ -18,8 +17,7 @@ def service_description():
 @router.post("/predict")
 def predict(file: UploadFile = File(...)):
     try:
-        sample = Image.open(file.file)
-        output = predictor.predict(sample)
+        output = predictor.predict(file.file)
         return output
 
     except Exception:
