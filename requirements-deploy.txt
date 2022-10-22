@@ -1,10 +1,7 @@
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==1.12.1
-torchvision==0.13.1
+torch==1.12.1+cpu
+torchvision==0.13.1+cpu
 numpy
-tqdm
-sklearn
 fastapi
 uvicorn
-matplotlib
 python-multipart

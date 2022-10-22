@@ -1,13 +1,17 @@
 FROM python:3.9
 
-WORKDIR /the/workdir/path
+WORKDIR /captcha
 
-COPY ./requirements.txt ./requirements.txt
+COPY ./requirements-deploy.txt ./setup.py ./setup.cfg ./
 
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements-deploy.txt --no-cache-dir
 
 COPY ./src ./src
+COPY ./artifacts ./artifacts
+
+RUN pip install -e .
 
 EXPOSE 80
 
-CMD [uvicorn src.main:app -p 80:80 --reload ]
+CMD ["uvicorn", "src.deploy.main:app", "--host", "0.0.0.0", "--port", "80"]

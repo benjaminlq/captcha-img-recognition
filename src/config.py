@@ -13,5 +13,5 @@ IMG_HEIGHT = 75
 NUM_WORKERS = os.cpu_count()
 EPOCHS = 200
 LEARNING_RATE = 1e-3
-#DEVICE = torch.device("cpu")
-DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+DEVICE = torch.device("cpu")
+#DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
