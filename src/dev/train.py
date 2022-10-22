@@ -1,7 +1,6 @@
 import argparse
 from dev.models import CTC
 from dev.dataset import CaptchaDataloader
-import os
 import torch
 import torch.nn as nn
 import config
