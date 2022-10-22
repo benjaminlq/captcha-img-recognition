@@ -7,6 +7,8 @@ __pycache__/
 data
 *.png
 *.pt
+*.pkl
+*.pickle
 
 # C extensions
 *.so
