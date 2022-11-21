@@ -48,9 +48,6 @@ def seed_everything(seed: int = 42):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = True
-    
-def beam_search():
-    return 
 
 if __name__ == "__main__":
     probs = torch.rand(5, 75, 10)
