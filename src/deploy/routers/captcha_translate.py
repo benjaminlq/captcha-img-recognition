@@ -1,7 +1,7 @@
 import config
 from dev import utils
 from fastapi import APIRouter, File, UploadFile
-from deploy.inference import Predictor
+from deploy.predictor import Predictor
 
 model_path = str(config.MODEL_PATH/"model.pt")
 decoder_path = str(config.DICTIONARY_PATH/"decode_dict.pkl")

@@ -1,16 +1,18 @@
 import argparse
 from dev.models import CTC
 from dev.dataset import CaptchaDataloader
+from dev.inference import GreedyCTCDecoder, BeamSearchCTCDecoder
 import torch
 import torch.nn as nn
 import config
 from tqdm import tqdm
-from config import DEVICE, MODEL_PATH
+from config import DEVICE, MODEL_PATH, DICTIONARY_PATH, BEAM_SIZE
 import matplotlib.pyplot as plt
 from dev import utils
 from pprint import pprint
+from typing import Literal
 
-def train(model, no_epochs, train_loader, val_loader, learning_rate, decode_dict, load_model = False):
+def train(model, no_epochs, train_loader, val_loader, learning_rate, decode_type: Literal["greedy","beam"] = "beam", load_model = False):
     optimizer = torch.optim.Adam(params = model.parameters(), lr = learning_rate)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = 0.8, patience = 5, verbose = True)
     
@@ -25,6 +27,11 @@ def train(model, no_epochs, train_loader, val_loader, learning_rate, decode_dict
 
     print(f"Model Training using {DEVICE}")
     model.to(DEVICE)
+    
+    if decode_type == "greedy":
+        decoder = GreedyCTCDecoder(str(DICTIONARY_PATH/"decode_dict.pkl"))
+    else:
+        decoder = BeamSearchCTCDecoder(str(DICTIONARY_PATH/"decode_dict.pkl"), BEAM_SIZE)
 
     for epoch in range(no_epochs):
         epoch_loss = 0
@@ -56,8 +63,9 @@ def train(model, no_epochs, train_loader, val_loader, learning_rate, decode_dict
             
             loss.backward()
             optimizer.step()
-            
-        val_loss, val_accuracy = eval(model, val_loader, decode_dict)           
+        
+        
+        val_loss, val_accuracy = eval(model, val_loader, decoder)         
         print(f"Epoch {epoch+1}: Train Loss = {epoch_loss/len(train_loader)}, Val Loss = {val_loss}, Val Accuracy = {val_accuracy}")
         train_loss_history.append(epoch_loss/len(train_loader))
         val_loss_history.append(val_loss)
@@ -75,7 +83,7 @@ def train(model, no_epochs, train_loader, val_loader, learning_rate, decode_dict
     plt.legend()
     plt.savefig(str(MODEL_PATH/"History.png"))    
     
-def eval(model, val_loader, decode_dict):
+def eval(model, val_loader, decoder):
     model.eval()
     val_loss = 0
     correct_count = 0
@@ -103,7 +111,7 @@ def eval(model, val_loader, decode_dict):
                                        target_lengths.to(DEVICE)
                                        )
             val_loss += loss.item()
-            _, preds_full, preds = utils.greedy_decode(log_probs.permute(1,0,2), decode_dict)
+            _, preds_full, preds = decoder.decode(log_probs.permute(1,0,2))
             for i in range(len(labels)):
                 total_count += 1
                 if labels[i] == preds[i]:
@@ -123,6 +131,7 @@ if __name__ == "__main__":
     parser.add_argument("-lr", "--learning_rate", type=float, default=config.LEARNING_RATE)
     parser.add_argument("-ep", "--epochs", type=int, default=config.EPOCHS)
     parser.add_argument("-l", "--load", type=bool, default=False)
+    parser.add_argument("-d", "--decode_type", type=str, default="beam")
 
     args = parser.parse_args()
 
@@ -134,5 +143,6 @@ if __name__ == "__main__":
     model = CTC(data_loader.full_dataset.vocab_size)
     
     train(model, args.epochs, train_loader, val_loader, args.learning_rate,
-          data_loader.full_dataset.id2char, load_model = args.load)
+          decode_type = args.decode_type, load_model = args.load)
     
+    # python3 src/dev/train.py -ep 20 -l True -d greedy
