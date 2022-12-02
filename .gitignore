@@ -6,9 +6,6 @@ __pycache__/
 # Data
 data
 data/*.png
-*.pt
-*.pkl
-*.pickle
 
 # C extensions
 *.so
