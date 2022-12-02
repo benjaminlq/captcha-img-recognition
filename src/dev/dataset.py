@@ -128,5 +128,7 @@ class CaptchaDataloader:
 if __name__ == "__main__":
     dataset = CaptchaDataset()
     dataset.setup()
-    print(dataset.vocab_size)
-    dataloader = CaptchaDataloader()
+    dataloader = CaptchaDataloader(batch_size=5)
+    trainloader = dataloader.train_loader()
+    sample_batch = next(iter(trainloader))
+    print(sample_batch)
