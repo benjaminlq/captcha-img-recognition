@@ -23,6 +23,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Download Data
+      run: |
+        sudo apt install curl unzip
+        mkdir data
+        cd data
+        curl -LO https://github.com/AakashKumarNain/CaptchaCracker/raw/master/captcha_images_v2.zip
+        unzip -qq captcha_images_v2.zip
+        cd ..
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -41,4 +50,4 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile
-        
+
