@@ -27,10 +27,9 @@ jobs:
       run: |
         sudo apt install curl unzip
         mkdir data
-        cd data
         curl -LO https://github.com/AakashKumarNain/CaptchaCracker/raw/master/captcha_images_v2.zip
-        unzip -qq captcha_images_v2.zip
-        cd ..
+        unzip -qq captcha_images_v2.zip -d data
+        rm captcha_images_v2.zip 
 
     - name: Install dependencies
       run: |
@@ -41,7 +40,7 @@ jobs:
 
     - name: Train Model
       run: |
-        python src/dev/train.py -ep 20 -d greedy
+        python src/dev/train.py -ep 3 -d greedy
 
     - name: Publish image to Docker Hub
       uses: elgohr/Publish-Docker-Github-Action@master
