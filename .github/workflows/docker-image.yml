@@ -41,7 +41,7 @@ jobs:
         python src/dev/train.py -ep 3 -d greedy
 
     - name: Publish image to Docker Hub
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v5
       with: 
         name: lequan2902/captcha_ctc
         username: ${{ secrets.DOCKER_USERNAME }}
